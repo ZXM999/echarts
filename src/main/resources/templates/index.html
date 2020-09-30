@@ -1,20 +1,22 @@
 <!DOCTYPE html>
-<html style="height: 100%">
+<html style="height: 80%">
 <head>
     <meta charset="utf-8">
 </head>
 <body style="height: 100%; margin: 0">
 <div id="container" style="height: 100%"></div>
 <script type="text/javascript" src="js/echarts.js"></script>
+<script type="text/javascript" src="js/jquery-3.5.1.js"></script>
 <script type="text/javascript">
     var dom = document.getElementById("container");
     var myChart = echarts.init(dom);
     var app = {};
     option = null;
+
     //顶部个数
     var yearCount = 11;
     //底部个数
-    var categoryCount = 6;
+    var categoryCount;
     //所有底部名字
     var xAxisData = [];
     //图红色线条
@@ -25,36 +27,42 @@
     var dataList = [];
 
     legendData.push('价格趋势');
+
     //红色线条
     var encodeY = [];
     for (var i = 0; i < yearCount; i++) {
         legendData.push((2010 + i) + '');
         //下面每一个数据
         dataList.push([]);
-        encodeY.push(1 + i);
+        encodeY.push(1+i);
     }
 
-    //添加底部数据
-    xAxisData.push("操作系统1111111111aaaaaaaaa1");
-    xAxisData.push("数据库1111111111aaaaaaaaaaa111111");
-    xAxisData.push("安全软件11111111aaaaaaaaa111111111");
-    xAxisData.push("管理软件1111111aaaaaaaaaaa111111111");
-    xAxisData.push("办公软件1111111aaaaaaaaaa111111111");
-    xAxisData.push("行业软件111111aaaaaaaaaaa1111111111");
 
-    for (var i = 0; i < categoryCount; i++) {
-        //红色线条
-        var customVal = [i];
-        customData.push(customVal);
-
-        //datalist.length就是
-        for (var j = 0; j < dataList.length; j++) {
-            var val = Math.random() * 1000;
-            var val1 =echarts.number.round(val,0)
-            dataList[j].push(val1);
-            customVal.push(val1);
+    $.ajax({
+        url: "/get",
+        type: "GET",
+        async: false,
+        success: function (result) {
+            console.log(result)
+            $.each(result, function (i, value) {
+                console.log(value.cpmc);
+                console.log(value.jg[3]);
+                console.log(result.length);
+                categoryCount = result.length;
+                //添加底部数据
+                xAxisData.push(value.cpmc);
+                //红色线条
+                var customVal = [i];
+                customData.push(customVal);
+                //每一个数据年份价格
+                for (var j = 0; j < dataList.length; j++) {
+                    dataList[j].push(value.jg[j]);
+                    customVal.push(value.jg[j]);
+                }
+            })
         }
-    }
+    });
+
 
     function renderItem(params, api) {
         var xValue = api.value(0);
@@ -111,7 +119,7 @@
                 {
                     debugger
                     var ret = "";//拼接加\n返回的类目项
-                    var maxLength = 8;//每项显示文字个数
+                    var maxLength = 5;//每项显示文字个数
                     var valLength = value.length;//X轴类目项的文字个数
                     var rowN = Math.ceil(valLength / maxLength); //类目项需要换行的行数
                     if (rowN > 1)//如果类目项的文字大于3,
@@ -135,10 +143,6 @@
         grid: {
             left: '10%',
             bottom:'20%'
-        },
-        grid: {
-            left: '10%',
-            bottom:'25%'
         },
         yAxis: {},
         series: [{
@@ -165,7 +169,7 @@
                 data: data
             };
         }))
-    };
+    };;
     if (option && typeof option === "object") {
         myChart.setOption(option, true);
     }
