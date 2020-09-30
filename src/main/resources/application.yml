@@ -7,5 +7,5 @@ spring:
     password: zxm123
     driver-class-name: com.mysql.cj.jdbc.Driver
 mybatis:
-  #  mapperÎÄ¼þ
+  #  mapperæ–‡ä»¶
   mapper-locations: classpath:mapper/*.xml
